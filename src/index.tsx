@@ -2,6 +2,9 @@ import React, {useState} from 'react';
 import ReactDOM from "react-dom";
 import './index.css';
 
+interface Props {
+  value: number,
+}
 //class Square extends React.Componentをfunctionに書き換える。
 // class Square extends React.Component {
 //   render() {
@@ -14,10 +17,11 @@ import './index.css';
 // }
 
 //class Square extends React.Componentを function Squareとして書き直した。
-function Square () {
+//データをProps経由で渡す
+const Square: React.FC<Props> = ({value}) => {
   return (
     <button className="square">
-      {/* TODO */}
+      {value}
     </button>
   )
 }
@@ -58,7 +62,7 @@ function Square () {
 function Board () {
   const status = 'Next player: X';
   const renderSquare = (i:number) => {
-    return <Square />;
+    return <Square value={i} />;
   }
 
   return (
