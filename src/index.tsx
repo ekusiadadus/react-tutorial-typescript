@@ -20,7 +20,7 @@ interface Props {
 //データをProps経由で渡す
 const Square: React.FC<Props> = ({value}) => {
   return (
-    <button className="square">
+    <button className="square" onClick={function() { alert('click'); }}>
       {value}
     </button>
   )
