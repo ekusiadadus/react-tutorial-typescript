@@ -2,8 +2,12 @@ import React, {useState} from 'react';
 import ReactDOM from "react-dom";
 import './index.css';
 
-interface Props {
-  value: number,
+//Squareの値と、型のエイリアス
+type SquareValue = 'X' | 'O' | null;
+//Propsを、squareprops, boardpropsにする
+interface SquareProps {
+  value: SquareValue,
+  onClick(): void,
 }
 //class Square extends React.Componentをfunctionに書き換える。
 // class Square extends React.Component {
@@ -18,10 +22,10 @@ interface Props {
 
 //class Square extends React.Componentを function Squareとして書き直した。
 //データをProps経由で渡す
-const Square: React.FC<Props> = ({value}) => {
+const Square: React.FC<SquareProps> = (props) => {
   return (
-    <button className="square" onClick={function() { alert('click'); }}>
-      {value}
+    <button className="square" onClick={props.onClick}>
+      {props.value}
     </button>
   )
 }
@@ -58,11 +62,16 @@ const Square: React.FC<Props> = ({value}) => {
 //   }
 // }
 
+//BoardPropsを作成
+interface BoardProps {
+  squares: SquareValue[],
+  onClick(i:number): void,
+}
 //class Board extends React.Componentを function Boardとして書き直した。
-function Board () {
+const Board:React.FC<BoardProps> = (props) => {
   const status = 'Next player: X';
   const renderSquare = (i:number) => {
-    return <Square value={i} />;
+    return <Square value={props.squares[i]} onClick ={() => props.onClick(i)}/>;
   }
 
   return (
@@ -114,11 +123,36 @@ function Board () {
 // }
 
 //class Gamee extends React.Componentを function Gameとして書き直した。
-function Game (){
+const Game: React.FC = () => {
+  const [xIsNext, setXIsNext] = useState<boolean>(true);
+  const [stepNumber, setStepNumber] = useState<number>(0);
+  const [history, setHistory] = useState<{squares: SquareValue[]}[]>([
+    {
+      squares: Array(9).fill(null)
+    }
+  ]);
+
+  const handleClick = (i: number): void => {
+    const newHistory = history.slice(0, stepNumber + 1);
+    const current = newHistory[newHistory.length - 1];
+    const squares = current.squares.slice();
+    if (squares[i]) {
+      return;
+    }
+    squares[i] = xIsNext ? "X" : "O";
+    setHistory(newHistory.concat([
+      {
+        squares: squares
+      }
+    ]));
+    setStepNumber(newHistory.length);
+    setXIsNext(!xIsNext);
+  }
+  const current = history[stepNumber];
   return (
     <div className="game">
       <div className="game-board">
-        <Board />
+        <Board squares={current.squares} onClick={i => handleClick(i)}/>
       </div>
       <div className="game-info">
         <div>{/* status */}</div>
